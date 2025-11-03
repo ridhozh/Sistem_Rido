@@ -121,6 +121,48 @@
                         </td>
                     </tr>
 
+                    <!-- Data Dummy 4 -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-004</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 11:00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Franco</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 75.000</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Transfer
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- Data Dummy 5 -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-005</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 11:00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Mursid</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 75.000</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Transfer
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- Data Dummy 6 -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-006</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 11:00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Roio</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 75.000</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Transfer
+                            </span>
+                        </td>
+                    </tr>
+
                 </tbody>
             </table>
         </div>

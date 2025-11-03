@@ -1,67 +1,57 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Toserba Hasan')</title>
+    <title>@yield('title', 'Admin - Toserba Hasan')</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
 
     @stack('scripts')
 </head>
 
-<body class="bg-slate-50 antialiased">
+<body class="bg-slate-50 overflow-x-hidden">
 
+    @include('admin.layouts.sidebar')
 
-    <div class="flex min-h-screen">
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-20 hidden"></div>
 
-        <!-- === Sidebar Admin === -->
-        @include('admin.layouts.sidebar')
+    <!-- Konten Utama: Kelas lg:ml-64 adalah default -->
+    <div id="main-content" class="flex-1 flex flex-col lg:ml-64 transition-all duration-300 ease-in-out">
 
-        <!-- === Konten Utama === -->
-        <div class="flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
+            <div class="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
+                <!-- Tombol Hamburger (Mobile) -->
+                <button id="hamburger-btn" class="lg:hidden text-slate-500 hover:text-slate-700">
+                    <span class="sr-only">Buka sidebar</span>
+                    <svg class="w-6 h-6" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
 
-            <header class="bg-white w-full p-6 flex justify-between items-center border-b border-slate-200">
-
-                <h1 class="text-xl sm:text-2xl font-semibold text-slate-800">
+                <!-- Judul Halaman (Desktop) -->
+                <h1 class="text-xl font-semibold text-slate-800 hidden lg:block">
                     @yield('page-title', 'Dashboard')
                 </h1>
 
-
-                <div class="text-right">
-                    <div class="text-sm font-medium text-slate-700">Nama Pemilik</div>
-                    <div class="text-xs text-slate-500">Pemilik Toko</div>
+                <!-- Info Pengguna -->
+                <div class="flex items-center">
+                    <div class="text-right">
+                        <div class="text-sm font-medium text-slate-700">Nama Pemilik</div>
+                        <div class="text-xs text-slate-500">Pemilik Toko</div>
+                    </div>
                 </div>
-            </header>
+            </div>
+        </header>
 
-
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-6 md:p-8">
-                @yield('content')
-            </main>
-
-
-            <footer class="bg-white p-4 text-center text-sm text-slate-500 border-t border-slate-200 mt-auto">
-                © Toserba Hasan 2025
-            </footer>
-        </div>
+        <!-- Konten Halaman Dinamis -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            @yield('content')
+        </main>
     </div>
 
-    @stack('scripts')
 </body>
-
 </html>
-
-
 
