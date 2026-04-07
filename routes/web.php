@@ -19,7 +19,9 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
             Route::get('/dashboard', 'admin')->name('admin');
             Route::get('/products', 'manageProducts')->name('admin.products');
             Route::get('/laporan', 'manageLaporan')->name('admin.laporan');
-            Route::get('/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
+
+            // user management
+            Route::get('/user/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
 
         });
     });

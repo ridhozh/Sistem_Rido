@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminMainController extends Controller
@@ -28,7 +29,8 @@ class AdminMainController extends Controller
     // manage pengguna
     public function managePengguna()
     {
-        return view('admin.manage_pengguna');
+        $pengguna = User::orderBy('id', 'asc')->get();
+        return view('admin.user.manage_pengguna', compact('pengguna'));
     }
 
 
