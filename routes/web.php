@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\admin\AdminMainController;
 use App\Http\Controllers\kasir\KasirMainController;
 
@@ -18,11 +16,13 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
 
             Route::get('/dashboard', 'admin')->name('admin');
             Route::get('/products', 'manageProducts')->name('admin.products');
-            Route::get('/laporan', 'manageLaporan')->name('admin.laporan');
+            Route::get('/laporan', 'manageLaporan')->name('admin.laporan'); 
 
             // user management
             Route::get('/user/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
-
+            Route::post('/users', 'store')->name('users.store');
+            Route::put('/users/{id}', 'update')->name('users.update');
+            Route::delete('/users/{id}', 'destroy')->name('users.destroy');
         });
     });
 });
@@ -36,10 +36,7 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
             // transaksi
             Route::get('/transaksi', 'transaksi')->name('kasir.transaksi');
             Route::get('/stok_barang', 'stok_barang')->name('kasir.stok_barang');
-
-
         });
-
     });
 });
 
@@ -52,4 +49,4 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -94,7 +94,7 @@
             <form id="form-pengguna" action="#" method="POST">
                 @csrf
                 <input type="hidden" name="_method" id="method-field">
-
+                <input type="hidden" name="id" id="pengguna-id">
                 <div class="space-y-4">
                     <div>
                         <label for="nama" class="block text-sm font-medium text-slate-700">Nama</label>
@@ -110,8 +110,8 @@
                         <label for="role" class="block text-sm font-medium text-slate-700">Role</label>
                         <select id="role" name="role"
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            <option value="kasir">Kasir</option>
-                            <option value="pemilik">Pemilik</option>
+                            <option value="0">Admin</option>
+                            <option value="1">Kasir</option>
                         </select>
                     </div>
                     <div>
