@@ -201,9 +201,6 @@
             const btnBatalHapus = document.getElementById('btn-batal-hapus');
             const hapusPenggunaId = document.getElementById('hapus-pengguna-id');
 
-            // ===============================
-            // 🔥 BUKA MODAL TAMBAH / EDIT
-            // ===============================
             const bukaModal = (mode = 'tambah', data = null) => {
                 form.reset();
 
@@ -236,9 +233,6 @@
                 modal.classList.add('hidden');
             };
 
-            // ===============================
-            // 🗑️ MODAL HAPUS
-            // ===============================
             const bukaModalHapus = (id) => {
                 hapusPenggunaId.value = id;
 
@@ -251,10 +245,6 @@
             const tutupModalHapus = () => {
                 modalHapus.classList.add('hidden');
             };
-
-            // ===============================
-            // 🎯 EVENT
-            // ===============================
 
             // tombol tambah
             btnTambah.addEventListener('click', () => bukaModal('tambah'));
