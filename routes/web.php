@@ -20,7 +20,9 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
             Route::get('/products', 'manageProducts')->name('admin.products');
             Route::get('/laporan', 'manageLaporan')->name('admin.laporan');
             Route::get('/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
-
+            Route::post('/produk/store', 'storeProduk')->name('admin.produk.store');
+            Route::put('/produk/{id}', 'updateProduk')->name('admin.produk.update');
+            Route::delete('/produk/{id}', 'destroy')->name('admin.produk.destroy');
         });
     });
 });
@@ -34,10 +36,7 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
             // transaksi
             Route::get('/transaksi', 'transaksi')->name('kasir.transaksi');
             Route::get('/stok_barang', 'stok_barang')->name('kasir.stok_barang');
-
-
         });
-
     });
 });
 
@@ -50,4 +49,4 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
