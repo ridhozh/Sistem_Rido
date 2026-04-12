@@ -22,7 +22,7 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
             Route::get('/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
             Route::post('/produk/store', 'storeProduk')->name('admin.produk.store');
             Route::put('/produk/{id}', 'updateProduk')->name('admin.produk.update');
-            Route::delete('/produk/{id}', 'destroy')->name('admin.produk.destroy');
+            Route::delete('/produk/{id}', 'destroyProduk')->name('admin.produk.destroy');
         });
     });
 });

@@ -87,7 +87,7 @@ class AdminMainController extends Controller
         return redirect()->back()->with('success', 'Produk berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function destroyProduk($id)
     {
         $produk = Produk::findOrFail($id);
 
