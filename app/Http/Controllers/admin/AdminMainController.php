@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kategori;
+use App\Models\Produk;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminMainController extends Controller
 {
@@ -18,7 +21,11 @@ class AdminMainController extends Controller
     // manage products
     public function manageProducts()
     {
-        return view('admin.manage_produk');
+        $categories = Kategori::all();
+
+        $products = Produk::with('kategori')->get();
+
+        return view('admin.manage_produk', compact('categories', 'products'));
     }
 
     // manage laporan
@@ -93,6 +100,66 @@ class AdminMainController extends Controller
         return redirect()->back()->with('success', 'User berhasil dihapus');
     }
 
+    public function storeProduk(Request $request)
+    {
+        // Validasi data
+        $validatedData = $request->validate([
+            'nama_produk' => 'required|string|max:255',
+            'kategori_id' => 'required|string|max:255',
+            'foto_produk' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'harga' => 'required|numeric|min:0',
+            'stok_awal' => 'required|integer|min:0'
+        ]);
 
+        // dd($validatedData);
 
+        if ($request->hasFile('foto_produk')) {
+            $path = $request->file('foto_produk')->store('products', 'public');
+            $validatedData['foto_produk'] = $path;
+        }
+
+        Produk::create($validatedData);
+
+        return redirect()->route('admin.products')->with('success', 'Produk berhasil Ditambahkan!');
+    }
+
+    public function updateProduk(Request $request, $id)
+    {
+        $produk = Produk::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'nama_produk' => 'required|string|max:255',
+            'foto_produk' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'kategori_id' => 'required|exists:kategoris,id',
+            'harga'       => 'required|numeric|min:0',
+            'stok_awal'   => 'required|integer|min:0'
+        ]);
+
+        if ($request->hasFile('foto_produk')) {
+            // Delete old photo if it exists
+            if ($produk->foto_produk) {
+                Storage::disk('public')->delete($produk->foto_produk);
+            }
+            $path = $request->file('foto_produk')->store('products', 'public');
+            $validatedData['foto_produk'] = $path;
+        }
+
+        $produk->update($validatedData);
+
+        return redirect()->back()->with('success', 'Produk berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $produk = Produk::findOrFail($id);
+
+        // Delete photo from storage
+        if ($produk->foto_produk) {
+            Storage::disk('public')->delete($produk->foto_produk);
+        }
+
+        $produk->delete();
+
+        return redirect()->back()->with('success', 'Produk berhasil dihapus!');
+    }
 }
