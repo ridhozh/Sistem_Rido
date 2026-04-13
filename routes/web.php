@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\admin\AdminMainController;
 use App\Http\Controllers\kasir\KasirMainController;
 
@@ -19,10 +17,16 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
             Route::get('/dashboard', 'admin')->name('admin');
             Route::get('/products', 'manageProducts')->name('admin.products');
             Route::get('/laporan', 'manageLaporan')->name('admin.laporan');
-            Route::get('/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
             Route::post('/produk/store', 'storeProduk')->name('admin.produk.store');
             Route::put('/produk/{id}', 'updateProduk')->name('admin.produk.update');
             Route::delete('/produk/{id}', 'destroyProduk')->name('admin.produk.destroy');
+            Route::get('/laporan', 'manageLaporan')->name('admin.laporan');
+
+            // user management
+            Route::get('/user/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
+            Route::post('/users', 'store')->name('users.store');
+            Route::put('/users/{id}', 'update')->name('users.update');
+            Route::delete('/users/{id}', 'destroy')->name('users.destroy');
         });
     });
 });
