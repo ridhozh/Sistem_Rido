@@ -15,7 +15,9 @@ class AdminMainController extends Controller
     // dashboard view
     public function admin()
     {
-        return view('admin.dashboard');
+        $lowStockProducts = Produk::where('stok_awal', '<', 10)->count();
+
+        return view('admin.dashboard', compact('lowStockProducts'));
     }
 
     // manage products
@@ -149,7 +151,7 @@ class AdminMainController extends Controller
         return redirect()->back()->with('success', 'Produk berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function destroyProduk($id)
     {
         $produk = Produk::findOrFail($id);
 

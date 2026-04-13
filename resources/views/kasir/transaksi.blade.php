@@ -180,17 +180,12 @@
                         // Anda harus mengganti ini dengan data dari AJAX search
                         const newRow = `
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">003</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Teh Pucuk</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp 3.000</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 3.000</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button class="btn-hapus-item text-red-600 hover:text-red-900">
-                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                    <td class="px-6 py-4 text-sm font-bold text-slate-700">${item.name}</td>
+                    <td class="px-6 py-4 text-sm text-slate-500">Rp ${item.price.toLocaleString('id-ID')}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700 font-bold">${item.qty}</td>
+                    <td class="px-6 py-4 text-sm text-blue-600 font-black">Rp ${item.subtotal.toLocaleString('id-ID')}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="removeFromCart('${item.id}')" class="text-red-400 hover:text-red-600">Hapus</button>
                     </td>
                 </tr>
             `;

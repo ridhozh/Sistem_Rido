@@ -27,39 +27,26 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-
-                <!-- Data Dummy 1 (Stok Aman) -->
+                @forelse($products as $produk)
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Sabun Lifebuoy</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rumah Tangga</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp 5.000</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">15 Pcs</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $produk->nama_produk }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $produk->kategori->nama_kategori ?? 'Tanpa Kategori' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp {{ number_format($produk->harga, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $produk->stok_awal }}</td>
                 </tr>
-
-                <!-- Data Dummy 2 (Stok Aman) -->
+                @empty
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Indomie Goreng</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Makanan</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp 3.500</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">120 Pcs</td>
+                    <td colspan="4" class="px-6 py-12 text-center bg-gray-50">
+                        <div class="flex flex-col items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                            <span class="text-gray-500 font-medium text-lg">Belum ada produk di toko ini.</span>
+                            <p class="text-gray-400 text-sm">Silahkan tambahkan produk baru melalui form di atas.</p>
+                        </div>
+                    </td>
                 </tr>
-
-                <!-- Data Dummy 3 (Stok Menipis) [cite: 136] -->
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Teh Pucuk</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Minuman</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp 3.000</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-600">3 Pcs</td>
-                </tr>
-
-                <!-- Data Dummy 4 (Stok Menipis) [cite: 136] -->
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Susu UHT Coklat 1L</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Minuman</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp 18.000</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-600">5 Pcs</td>
-                </tr>
-
+                @endforelse
             </tbody>
         </table>
     </div>
