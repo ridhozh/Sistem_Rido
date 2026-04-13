@@ -13,7 +13,9 @@ class AdminMainController extends Controller
     // dashboard view
     public function admin()
     {
-        return view('admin.dashboard');
+        $lowStockProducts = Produk::where('stok_awal', '<', 10)->count();
+
+        return view('admin.dashboard', compact('lowStockProducts'));
     }
 
     // manage products
