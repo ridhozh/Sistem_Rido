@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\AdminMainController;
 use App\Http\Controllers\kasir\KasirMainController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -40,6 +40,7 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
             Route::get('/dashboard', 'index')->name('kasir');
             // transaksi
             Route::get('/transaksi', 'transaksi')->name('kasir.transaksi');
+            Route::post('/transaksi/checkout', 'checkout')->name('kasir.transaksi.checkout');
             Route::get('/stok_barang', 'stok_barang')->name('kasir.stok_barang');
         });
     });

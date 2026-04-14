@@ -58,11 +58,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                'options' => [
-                    \Pdo\Mysql::ATTR_SSL_CA => '/path/to/ca-cert.pem',
-                ],
-            ]) : [],
+            'options' => [],
         ],
 
         'mariadb' => [
@@ -80,11 +76,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                'options' => [
-                    \Pdo\Mysql::ATTR_SSL_CA => '/path/to/ca-cert.pem',
-                ],
-            ]) : [],
+            'options' => [],
         ],
 
         'pgsql' => [
