@@ -21,11 +21,12 @@ class Produk extends Model
         'stok_awal',
     ];
 
-    /**
-     * Get the category that owns the product.
-     */
     public function kategori(): BelongsTo
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+    public function details()
+    {
+        return $this->hasMany(DetailTransaksi::class);
     }
 }

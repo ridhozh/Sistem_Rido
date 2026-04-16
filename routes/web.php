@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
             Route::get('/transaksi', 'transaksi')->name('kasir.transaksi');
             Route::post('/transaksi/checkout', 'checkout')->name('kasir.transaksi.checkout');
             Route::get('/stok_barang', 'stok_barang')->name('kasir.stok_barang');
+            Route::post('/simpan-transaksi', 'simpanTransaksi')->name('kasir.simpanTransaksi');
         });
     });
 });

@@ -205,7 +205,9 @@
     @php
         $isProduction = config('services.midtrans.isProduction');
         $clientKey = config('services.midtrans.clientKey');
-        $snapUrl = $isProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
+        $snapUrl = $isProduction
+            ? 'https://app.midtrans.com/snap/snap.js'
+            : 'https://app.sandbox.midtrans.com/snap/snap.js';
     @endphp
     <script src="{{ $snapUrl }}" data-client-key="{{ $clientKey }}"></script>
     <script>
@@ -364,73 +366,117 @@
 
         function prosesTransaksi() {
             if (cart.length === 0) return alert("Keranjang masih kosong!");
-            
+
             const metodeBayar = document.getElementById('metode-bayar').value;
 
             if (metodeBayar === 'tunai') {
                 const totalValue = parseInt(document.getElementById('total-tagihan').innerText.replace(/[^0-9]/g, '')) || 0;
                 const bayarValue = parseInt(document.getElementById('input-bayar').value) || 0;
-                
+
                 if (bayarValue < totalValue) {
                     return alert("Uang pembayaran kurang!");
                 }
 
-                alert("Transaksi Tunai Berhasil diproses!");
-                cart = [];
-                renderEverything();
-                document.getElementById('input-bayar').value = 0;
-                hitungKembalian();
-                return;
+                fetch('/simpan-transaksi', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            order_id: 'CASH-' + Date.now(),
+                            payment_type: 'tunai',
+                            cart: cart
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        alert("Transaksi Tunai Berhasil!");
+
+                        cart = [];
+                        renderEverything();
+                        document.getElementById('input-bayar').value = 0;
+                        hitungKembalian();
+                    });
             }
 
             // Proses Midtrans
             const btnProses = document.querySelector('button[onclick="prosesTransaksi()"]');
             const originalText = btnProses.innerHTML;
-            btnProses.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> MEMPROSES...</span>';
+            btnProses.innerHTML =
+                '<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> MEMPROSES...</span>';
             btnProses.disabled = true;
 
             fetch('{{ route('kasir.transaksi.checkout') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ cart: cart })
-            })
-            .then(response => response.json())
-            .then(data => {
-                btnProses.innerHTML = originalText;
-                btnProses.disabled = false;
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        cart: cart
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    btnProses.innerHTML = originalText;
+                    btnProses.disabled = false;
 
-                if (data.status === 'success') {
-                    window.snap.pay(data.snap_token, {
-                        onSuccess: function(result){
-                            alert("Pembayaran Berhasil! Order ID: " + data.order_id);
-                            cart = [];
-                            renderEverything();
-                            document.getElementById('input-bayar').value = 0;
-                            hitungKembalian();
-                        },
-                        onPending: function(result){
-                            alert("Menunggu pembayaran Anda!");
-                        },
-                        onError: function(result){
-                            alert("Pembayaran Gagal!");
-                        },
-                        onClose: function(){
-                            alert("Anda menutup halaman sebelum menyelesaikan pembayaran!");
-                        }
-                    });
-                } else {
-                    alert("Gagal memproses transaksi: " + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                btnProses.innerHTML = originalText;
-                btnProses.disabled = false;
-                console.error('Error:', error);
-                alert("Terjadi kesalahan pada sistem!");
-            });
+                    if (data.status === 'success') {
+                        window.snap.pay(data.snap_token, {
+                            onSuccess: function(result) {
+                                alert("Pembayaran Berhasil! Order ID: " + data.order_id);
+
+                                // 🔥 kirim ke backend
+                                fetch('/simpan-transaksi', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        },
+                                        body: JSON.stringify({
+                                            order_id: data.order_id,
+                                            payment_type: result.payment_type,
+                                            cart: cart
+                                        })
+                                    })
+                                    .then(res => res.json())
+                                    .then(res => {
+                                        console.log(res);
+
+                                        // reset UI
+                                        cart = [];
+                                        renderEverything();
+                                        document.getElementById('input-bayar').value = 0;
+                                        hitungKembalian();
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert("Gagal simpan transaksi!");
+                                    });
+                                document.getElementById('input-bayar').value = 0;
+                                hitungKembalian();
+                            },
+                            onPending: function(result) {
+                                alert("Menunggu pembayaran Anda!");
+                            },
+                            onError: function(result) {
+                                alert("Pembayaran Gagal!");
+                            },
+                            onClose: function() {
+                                alert("Anda menutup halaman sebelum menyelesaikan pembayaran!");
+                            }
+                        });
+                    } else {
+                        alert("Gagal memproses transaksi: " + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    btnProses.innerHTML = originalText;
+                    btnProses.disabled = false;
+                    console.error('Error:', error);
+                    alert("Terjadi kesalahan pada sistem!");
+                });
         }
     </script>
 @endpush
