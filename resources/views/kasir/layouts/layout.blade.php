@@ -7,8 +7,6 @@
     <title>@yield('title', 'Kasir - Toserba Hasan')</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    @stack('scripts')
 </head>
 
 <body class="bg-slate-50 overflow-x-hidden">

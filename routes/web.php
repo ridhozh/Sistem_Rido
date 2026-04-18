@@ -40,6 +40,7 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
             Route::get('/dashboard', 'index')->name('kasir');
             // transaksi
             Route::get('/transaksi', 'transaksi')->name('kasir.transaksi');
+            Route::get('/transaksi/finish', 'finishTransaksi')->name('kasir.transaksi.finish');
             Route::post('/transaksi/checkout', 'checkout')->name('kasir.transaksi.checkout');
             Route::get('/stok_barang', 'stok_barang')->name('kasir.stok_barang');
             Route::post('/simpan-transaksi', 'simpanTransaksi')->name('kasir.simpanTransaksi');

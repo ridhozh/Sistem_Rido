@@ -4,6 +4,18 @@
 @section('page-title', 'Transaksi Baru')
 
 @section('content')
+    @if (session('success'))
+        <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <div class="lg:col-span-8 space-y-6">
@@ -137,7 +149,7 @@
                             </div>
                         </div>
 
-                        <button onclick="prosesTransaksi()"
+                        <button type="button" id="btn-proses-transaksi"
                             class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
                             PROSES TRANSAKSI
                         </button>
@@ -212,6 +224,7 @@
     <script src="{{ $snapUrl }}" data-client-key="{{ $clientKey }}"></script>
     <script>
         let cart = [];
+        let isProcessing = false;
 
         // Add Item to Cart (Triggered by Katalog Buttons)
         document.addEventListener('click', function(e) {
@@ -364,119 +377,146 @@
             }
         }
 
-        function prosesTransaksi() {
+        async function prosesTransaksi() {
+            if (isProcessing) {
+                return;
+            }
+
             if (cart.length === 0) return alert("Keranjang masih kosong!");
 
             const metodeBayar = document.getElementById('metode-bayar').value;
+            const btnProses = document.getElementById('btn-proses-transaksi');
+            const originalText = btnProses.innerHTML;
 
-            if (metodeBayar === 'tunai') {
-                const totalValue = parseInt(document.getElementById('total-tagihan').innerText.replace(/[^0-9]/g, '')) || 0;
-                const bayarValue = parseInt(document.getElementById('input-bayar').value) || 0;
+            isProcessing = true;
+            btnProses.disabled = true;
+            btnProses.innerHTML =
+                '<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> MEMPROSES...</span>';
 
-                if (bayarValue < totalValue) {
-                    return alert("Uang pembayaran kurang!");
-                }
+            try {
+                if (metodeBayar === 'tunai') {
+                    const totalValue = parseInt(document.getElementById('total-tagihan').innerText.replace(/[^0-9]/g,
+                        '')) || 0;
+                    const bayarValue = parseInt(document.getElementById('input-bayar').value) || 0;
 
-                fetch('/simpan-transaksi', {
+                    if (bayarValue < totalValue) {
+                        throw new Error("Uang pembayaran kurang!");
+                    }
+
+                    const response = await fetch('{{ route('kasir.simpanTransaksi') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
                         },
                         body: JSON.stringify({
                             order_id: 'CASH-' + Date.now(),
                             payment_type: 'tunai',
                             cart: cart
                         })
-                    })
-                    .then(res => res.json())
-                    .then(res => {
-                        alert("Transaksi Tunai Berhasil!");
-
-                        cart = [];
-                        renderEverything();
-                        document.getElementById('input-bayar').value = 0;
-                        hitungKembalian();
                     });
-            }
 
-            // Proses Midtrans
-            const btnProses = document.querySelector('button[onclick="prosesTransaksi()"]');
-            const originalText = btnProses.innerHTML;
-            btnProses.innerHTML =
-                '<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> MEMPROSES...</span>';
-            btnProses.disabled = true;
+                    const result = await response.json();
 
-            fetch('{{ route('kasir.transaksi.checkout') }}', {
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Transaksi tunai gagal disimpan.');
+                    }
+
+                    alert("Transaksi Tunai Berhasil!");
+                    cart = [];
+                    renderEverything();
+                    document.getElementById('input-bayar').value = 0;
+                    hitungKembalian();
+                    return;
+                }
+
+                if (!window.snap) {
+                    throw new Error("Snap Midtrans gagal dimuat. Periksa client key sandbox Anda.");
+                }
+
+                const response = await fetch('{{ route('kasir.transaksi.checkout') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         cart: cart
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    btnProses.innerHTML = originalText;
-                    btnProses.disabled = false;
+                });
 
-                    if (data.status === 'success') {
-                        window.snap.pay(data.snap_token, {
-                            onSuccess: function(result) {
-                                alert("Pembayaran Berhasil! Order ID: " + data.order_id);
+                const data = await response.json();
 
-                                // 🔥 kirim ke backend
-                                fetch('/simpan-transaksi', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        },
-                                        body: JSON.stringify({
-                                            order_id: data.order_id,
-                                            payment_type: result.payment_type,
-                                            cart: cart
-                                        })
-                                    })
-                                    .then(res => res.json())
-                                    .then(res => {
-                                        console.log(res);
+                if (!response.ok || data.status !== 'success') {
+                    throw new Error(data.message || 'Gagal memproses transaksi Midtrans.');
+                }
 
-                                        // reset UI
-                                        cart = [];
-                                        renderEverything();
-                                        document.getElementById('input-bayar').value = 0;
-                                        hitungKembalian();
-                                    })
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert("Gagal simpan transaksi!");
-                                    });
+                btnProses.innerHTML = originalText;
+                btnProses.disabled = false;
+                isProcessing = false;
+
+                window.snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        alert("Pembayaran Berhasil! Order ID: " + data.order_id);
+
+                        fetch('{{ route('kasir.simpanTransaksi') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    order_id: data.order_id,
+                                    payment_type: result.payment_type || 'midtrans',
+                                    cart: cart
+                                })
+                            })
+                            .then(async res => {
+                                if (!res.ok) {
+                                    const payload = await res.json();
+                                    throw new Error(payload.message || 'Gagal simpan transaksi Midtrans.');
+                                }
+
+                                cart = [];
+                                renderEverything();
                                 document.getElementById('input-bayar').value = 0;
                                 hitungKembalian();
-                            },
-                            onPending: function(result) {
-                                alert("Menunggu pembayaran Anda!");
-                            },
-                            onError: function(result) {
-                                alert("Pembayaran Gagal!");
-                            },
-                            onClose: function() {
-                                alert("Anda menutup halaman sebelum menyelesaikan pembayaran!");
-                            }
-                        });
-                    } else {
-                        alert("Gagal memproses transaksi: " + (data.message || 'Unknown error'));
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+                    },
+                    onPending: function() {
+                        alert("Menunggu pembayaran Anda!");
+                    },
+                    onError: function() {
+                        alert("Pembayaran Gagal!");
+                    },
+                    onClose: function() {
+                        alert("Anda menutup halaman sebelum menyelesaikan pembayaran!");
                     }
-                })
-                .catch(error => {
+                });
+            } catch (error) {
+                console.error(error);
+                alert(error.message || "Terjadi kesalahan pada sistem!");
+            } finally {
+                if (isProcessing) {
                     btnProses.innerHTML = originalText;
                     btnProses.disabled = false;
-                    console.error('Error:', error);
-                    alert("Terjadi kesalahan pada sistem!");
-                });
+                    isProcessing = false;
+                }
+            }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnProses = document.getElementById('btn-proses-transaksi');
+
+            if (btnProses) {
+                btnProses.addEventListener('click', prosesTransaksi);
+            }
+        });
     </script>
 @endpush

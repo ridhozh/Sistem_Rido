@@ -17,6 +17,7 @@ class Transaksi extends Model
         'transaction_id',
         'transaction_date',
         'total_amount',
+        'cashier_name',
         'payment_method',
     ];
     public function details()
