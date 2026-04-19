@@ -78,90 +78,29 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-
+                    @forelse ($transaksis as $trnsk)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $trnsk->transaction_id }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $trnsk->transaction_date->format('d-m-Y H:i:s') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Kasir</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                                Rp.{{ number_format($trnsk->total_amount, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span
+                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ $trnsk->payment_method }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">Tidak ada data</td>
+                        </tr>
+                    @endforelse
                     <!-- Data Dummy 1 -->
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-001</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 09:30</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Dita</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 150.000</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                Tunai
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Data Dummy 2 -->
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-002</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 10:15</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Dita</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 320.500</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                QRIS
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Data Dummy 3 -->
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-003</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 11:00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Andi</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 75.000</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Transfer
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Data Dummy 4 -->
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-004</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 11:00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Franco</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 75.000</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Transfer
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Data Dummy 5 -->
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-005</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 11:00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Mursid</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 75.000</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Transfer
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Data Dummy 6 -->
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TRX-006</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28-10-2025 11:00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Roio</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">Rp 75.000</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Transfer
-                            </span>
-                        </td>
-                    </tr>
 
                 </tbody>
             </table>

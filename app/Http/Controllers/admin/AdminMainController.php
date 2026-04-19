@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use App\Models\Produk;
+use App\Models\Transaksi;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +34,8 @@ class AdminMainController extends Controller
     // manage laporan
     public function manageLaporan()
     {
-        return view('admin.laporan');
+        $transaksis = Transaksi::all();
+        return view('admin.laporan', compact('transaksis'));
     }
 
     // manage pengguna
