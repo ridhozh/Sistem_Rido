@@ -59,3 +59,15 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## 📂 Features: Reporting & Exporting
+
+I have implemented the reporting module for Toserba Hasan, allowing administrators to export transaction data into professional formats.
+
+## 🛠️ Dependencies
+
+The following extensions/packages were added:
+
+Laravel Excel: For generating high-performance .xlsx files [https://docs.laravel-excel.com/3.1/getting-started/] .
+
+Laravel-DomPDF: For rendering HTML views into PDF documents [https://github.com/barryvdh/laravel-dompdf].
