@@ -23,6 +23,10 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
             Route::delete('/produk/{id}', 'destroyProduk')->name('admin.produk.destroy');
             Route::get('/laporan', 'manageLaporan')->name('admin.laporan');
 
+            // Export routes
+            Route::get('/laporan/pdf', 'exportPDF')->name('admin.laporan.pdf');
+            Route::get('/laporan/excel', 'exportExcel')->name('admin.laporan.excel');
+
             // user management
             Route::get('/user/manage_pengguna', 'managePengguna')->name('admin.manage_pengguna');
             Route::post('/users', 'store')->name('users.store');

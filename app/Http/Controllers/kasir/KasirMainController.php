@@ -7,6 +7,7 @@ use App\Models\DetailTransaksi;
 use App\Models\Kategori;
 use App\Models\Produk;
 use App\Models\Transaksi;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,13 @@ class KasirMainController extends Controller
     //
     public function index()
     {
-        return view('kasir.dashboard');
+        $todayRevenue = DetailTransaksi::whereDate('created_at', Carbon::today())
+            ->sum('subtotal');
+
+        $totalItemsSold = DetailTransaksi::whereDate('created_at', Carbon::today())
+            ->sum('qty');
+            
+        return view('kasir.dashboard', compact('todayRevenue', 'totalItemsSold'));
     }
 
     public function transaksi()
@@ -185,7 +192,7 @@ class KasirMainController extends Controller
 
         $productIds = collect($cart)
             ->pluck('id')
-            ->map(fn ($id) => (int) $id)
+            ->map(fn($id) => (int) $id)
             ->filter()
             ->unique()
             ->values();

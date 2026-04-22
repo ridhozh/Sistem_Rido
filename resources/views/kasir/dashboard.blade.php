@@ -7,7 +7,7 @@
 
 <!-- Tombol Aksi Utama Sesuai Wireframe [cite: 38] -->
 <div class="mb-8">
-    <a href="#" class="px-6 py-3 bg-blue-600 text-white text-base font-medium rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2">
+    <a href="{{ route('kasir.transaksi') }}" class="px-6 py-3 bg-blue-600 text-white text-base font-medium rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2">
         <!-- Icon: Plus -->
         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -32,7 +32,7 @@
         </div>
         <div>
             <!-- Data dummy dari wireframe -->
-            <p class="text-2xl font-bold text-slate-800">Rp 500.000</p>
+            <p class="text-2xl font-bold text-slate-800">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</p>
             <p class="text-xs text-slate-500 mt-1">Total transaksi Anda</p>
         </div>
     </div>
@@ -50,7 +50,7 @@
         </div>
         <div>
             <!-- Data dummy dari wireframe -->
-            <p class="text-2xl font-bold text-slate-800">56 Pcs</p>
+            <p class="text-2xl font-bold text-slate-800">{{ $totalItemsSold }}</p>
             <p class="text-xs text-slate-500 mt-1">Barang yang Anda jual hari ini</p>
         </div>
     </div>

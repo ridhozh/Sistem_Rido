@@ -22,8 +22,8 @@
         </div>
         <div>
             <!-- Font lebih kecil dan seimbang -->
-            <p class="text-2xl font-bold text-slate-800">Rp 1.250.000</p>
-            <p class="text-xs text-green-500 mt-1">+15% dari kemarin</p>
+            <p class="text-2xl font-bold text-slate-800">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</p>
+            <p class="text-xs {{ $revenueChange > 0 ? 'text-green-500' : 'text-red-500' }} mt-1">{{ $revenueChange >= 0 ? '↑' : '↓' }} {{ abs(round($revenueChange, 1)) }}% dari kemarin</p>
         </div>
     </div>
 
@@ -40,8 +40,14 @@
             </span>
         </div>
         <div>
-            <p class="text-2xl font-bold text-slate-800">120 Pcs</p>
-            <p class="text-xs text-slate-500 mt-1">Total hari ini</p>
+            <p class="text-2xl font-bold text-slate-800">{{ $todayQty ?? 0 }} Pcs</p>
+            <p class="text-xs  {{ $todayQty > 0 ? 'text-slate-500' : 'text-red-500' }} mt-1">
+                @if(($todayQty ?? 0) > 0)
+                Total hari ini
+                @else
+                Tidak ada penjualan hari ini
+                @endif
+            </p>
         </div>
     </div>
 
@@ -58,8 +64,13 @@
             </span>
         </div>
         <div>
-            <p class="text-2xl font-bold text-slate-800">Indomie Goreng</p>
-            <p class="text-xs text-slate-500 mt-1">30 Pcs terjual</p>
+            @if($mostSoldProduct && $mostSoldProduct->produk)
+            <p class="text-2xl font-bold text-slate-800">{{ $mostSoldProduct->produk->nama_produk }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ $mostSoldProduct->total_qty }} Pcs terjual</p>
+            @else
+            <p class="text-2xl font-bold text-slate-800">-</p>
+            <p class="text-xs text-red-500 mt-1 font-medium italic">Belum ada penjualan!</p>
+            @endif
         </div>
     </div>
 
@@ -84,7 +95,7 @@
         </div>
 
         <div>
-            <p class="text-2xl font-bold text-slate-800">{{ $lowStockProducts }} Produk</p>
+            <p class="text-2xl font-bold text-slate-800">{{ $lowStockProducts ?? 0}} Produk</p>
 
             @if($lowStockProducts > 0)
             <p class="text-xs text-red-500 mt-1 font-medium italic">Segera restock!</p>
@@ -104,76 +115,44 @@
     </a>
 </div>
 
-<!-- Konten Tambahan (Chart Dummy - Revisi 2) -->
-<div class="mt-8 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-    <h3 class="text-lg font-semibold text-slate-700 mb-4">Grafik Penjualan Mingguan</h3>
+<div class="mt-8 bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
+    <h3 class="text-lg font-bold text-slate-800 mb-6">Grafik Penjualan Mingguan</h3>
 
-    <!-- Wrapper baru untuk chart dummy dengan Y-Axis -->
-    <div class="h-72 rounded-lg bg-slate-50 p-4 pt-8 relative">
+    <div class="h-80 rounded-[2rem] bg-slate-50 p-6 pt-10 relative overflow-visible">
 
-        <!-- Y-Axis Labels (Absolute positioned) -->
-        <!-- Label-label ini diposisikan absolut di sebelah kiri -->
-        <div class="absolute top-6 left-0 flex flex-col justify-between pr-4 text-right text-xs text-slate-400"
-            style="height: calc(100% - 5rem);">
-            <span>Rp 3jt</span>
-            <span>Rp 2jt</span>
-            <span>Rp 1jt</span>
-            <span>0</span>
+        <div class="absolute top-10 left-4 flex flex-col justify-between pr-4 text-right text-[10px] font-bold text-slate-400"
+            style="height: 180px; z-index: 10;">
+            <span>Rp {{ number_format($yAxisMax, 0, ',', '.') }}</span>
+            <span>Rp {{ number_format($yAxisMax / 2, 0, ',', '.') }}</span>
+            <span></span>
         </div>
 
-        <!-- X-Axis Line (Absolute positioned) -->
-        <!-- Ini adalah garis putus-putus horizontal sebagai sumbu X -->
-        <div class="absolute bottom-10 left-12 right-4 border-t border-slate-300 border-dashed"></div>
+        <div class="absolute bottom-14 left-16 right-6 border-t border-slate-200 border-dashed" style="z-index: 5;"></div>
 
-        <!-- Container untuk bar chart (diposisikan di dalam, dengan padding kiri untuk Y-axis) -->
-        <!-- style="height: calc(100% - 2.5rem);" menyisakan ruang 2.5rem di bawah untuk label X-axis (Sen, Sel, dst.) -->
-        <div class="flex items-end h-full space-x-4 justify-center pl-12" title="Grafik Penjualan 7 Hari Terakhir"
-            style="height: calc(100% - 2.5rem);">
+        <div class="flex items-end h-[200px] space-x-6 justify-center pl-16 relative" style="z-index: 20;">
+            @foreach($salesData as $data)
+            @php
+            // Logic: (Current Revenue / Max Revenue) * 100
+            $percentage = ($yAxisMax > 0) ? ($data['revenue'] / $yAxisMax) * 100 : 0;
 
+            // Force a minimum visual height if there is data
+            $h = $data['revenue'] > 0 ? max($percentage, 5) : 0;
+            @endphp
 
-            <!-- Bar 1 (Senin) -->
-            <div class="flex flex-col items-center flex-1 max-w-[50px]">
-                <div class="w-full bg-blue-300 rounded-t-md hover:bg-blue-400 transition-colors" style="height: 40%"
-                    title="Rp 1.2jt"></div>
-                <span class="text-xs text-slate-500 mt-2">Sen</span>
-            </div>
-            <!-- Bar 2 (Selasa) -->
-            <div class="flex flex-col items-center flex-1 max-w-[50px]">
-                <div class="w-full bg-blue-500 rounded-t-md hover:bg-blue-600 transition-colors" style="height: 60%"
-                    title="Rp 1.8jt"></div>
-                <span class="text-xs text-slate-500 mt-2">Sel</span>
-            </div>
-            <!-- Bar 3 (Rabu) -->
-            <div class="flex flex-col items-center flex-1 max-w-[50px]">
-                <div class="w-full bg-blue-300 rounded-t-md hover:bg-blue-400 transition-colors" style="height: 50%"
-                    title="Rp 1.5jt"></div>
-                <span class="text-xs text-slate-500 mt-2">Rab</span>
-            </div>
-            <!-- Bar 4 (Kamis) -->
-            <div class="flex flex-col items-center flex-1 max-w-[50px]">
-                <div class="w-full bg-blue-500 rounded-t-md hover:bg-blue-600 transition-colors" style="height: 75%"
-                    title="Rp 2.1jt"></div>
-                <span class="text-xs text-slate-500 mt-2">Kam</span>
-            </div>
-            <!-- Bar 5 (Jumat) -->
-            <div class="flex flex-col items-center flex-1 max-w-[50px]">
-                <div class="w-full bg-blue-300 rounded-t-md hover:bg-blue-400 transition-colors" style="height: 65%"
-                    title="Rp 1.9jt"></div>
-                <span class="text-xs text-slate-500 mt-2">Jum</span>
-            </div>
-            <!-- Bar 6 (Sabtu) -->
-            <div class="flex flex-col items-center flex-1 max-w-[50px]">
-                <div class="w-full bg-blue-300 rounded-t-md hover:bg-blue-400 transition-colors" style="height: 30%"
-                    title="Rp 900rb"></div>
-                <span class="text-xs text-slate-500 mt-2">Sab</span>
-            </div>
-            <!-- Bar 7 (Minggu) -->
-            <div class="flex flex-col items-center flex-1 max-w-[50px]">
-                <div class="w-full bg-blue-500 rounded-t-md hover:bg-blue-600 transition-colors" style="height: 85%"
-                    title="Rp 2.4jt"></div>
-                <span class="text-xs text-slate-500 mt-2">Min</span>
-            </div>
+            <div class="flex flex-col items-center flex-1 max-w-[50px] group relative h-full justify-end">
+                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap z-50">
+                    {{ $data['formatted'] }}
+                </div>
 
+                <div class="w-full transition-all duration-300 ease-out rounded-t-lg bg-blue-200 group-hover:bg-blue-600 group-hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] group-hover:scale-x-105"
+                    style="height:{{ $h }}%;min-width:30px">
+                </div>
+
+                <span class="text-[10px] font-bold mt-4 transition-colors duration-300 text-slate-400 group-hover:text-blue-600">
+                    {{ $data['label'] }}
+                </span>
+            </div>
+            @endforeach
         </div>
     </div>
 </div>
