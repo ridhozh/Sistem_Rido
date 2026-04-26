@@ -42,6 +42,8 @@ Route::middleware(['auth', 'verified', 'rolemanager:kasir'])->group(function () 
     Route::prefix('kasir')->group(function () {
         Route::controller(KasirMainController::class)->group(function () {
             Route::get('/dashboard', 'index')->name('kasir');
+
+            
             // transaksi
             Route::get('/transaksi', 'transaksi')->name('kasir.transaksi');
             Route::get('/transaksi/finish', 'finishTransaksi')->name('kasir.transaksi.finish');

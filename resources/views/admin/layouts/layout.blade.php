@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin - Toserba Hasan')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
     <style>
         /* Mencegah teks loncat saat animasi sidebar */
         .sidebar-text {
@@ -28,6 +29,7 @@
             margin-left: 5rem !important;
         }
     </style>
+    
 </head>
 
 <body class="bg-slate-50 antialiased overflow-x-hidden">
@@ -55,7 +57,7 @@
 
                 <div class="flex items-center gap-3 border-l pl-4 border-gray-100">
                     <div class="hidden sm:block text-right leading-tight">
-                        <div class="text-sm font-bold text-slate-700">Nama Pemilik</div>
+                        <div class="text-sm font-bold text-slate-700">{{ Auth::user()->name }}</div>
                         <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Administrator</div>
                     </div>
                     <div
@@ -73,6 +75,7 @@
         </main>
     </div>
 
+    @livewireScripts
     <script>
         const sidebar = document.getElementById('main-sidebar');
         const mainContent = document.getElementById('main-content');

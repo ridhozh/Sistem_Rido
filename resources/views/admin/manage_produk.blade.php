@@ -66,91 +66,7 @@
         @endif
     </div>
 
-    <!-- Kontainer Utama -->
-    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-semibold text-slate-700">Daftar Produk</h2>
-            <button id="btn-tambah-produk"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 inline-flex items-center space-x-2">
-                <!-- Icon Plus -->
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                <span>Tambah Produk</span>
-            </button>
-        </div>
-
-        <!-- Tabel Responsif -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
-                            Produk</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori
-                        </th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga
-                        </th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($products as $produk)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $produk->nama_produk }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $produk->kategori->nama_kategori ?? 'Tanpa Kategori' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp
-                                {{ number_format($produk->harga, 0, ',', '.') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $produk->stok_awal }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <button class="btn-edit text-indigo-600 hover:text-indigo-900" data-id="{{ $produk->id }}"
-                                    data-nama="{{ $produk->nama_produk }}" data-kategori="{{ $produk->kategori_id }}"
-                                    data-harga="{{ $produk->harga }}" data-stok="{{ $produk->stok_awal }}"
-                                    data-foto="{{ $produk->foto_produk }}">
-                                    Edit
-                                </button>
-                                <form action="{{ route('admin.produk.destroy', $produk->id) }}" method="POST"
-                                    class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900"
-                                        onclick="return confirm('Hapus produk ini?')">
-                                        Hapus
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-12 text-center bg-gray-50">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                    <span class="text-gray-500 font-medium text-lg">Belum ada produk di toko ini.</span>
-                                    <p class="text-gray-400 text-sm">Silahkan tambahkan produk baru melalui form di atas.
-                                    </p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-    </div>
+   <livewire:product-search />
 
     <!-- Modal Tambah/Edit Produk -->
     <div id="modal-produk" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
@@ -224,6 +140,42 @@
         </div>
     </div>
 
+    <!-- Modal Hapus Produk -->
+    <div id="modal-hapus-produk" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
+
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v4m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" />
+                    </svg>
+                </div>
+
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-slate-800">Hapus Produk</h3>
+                    <p class="mt-2 text-sm text-slate-600">
+                        Apakah Anda yakin ingin menghapus
+                        <span id="nama-produk-hapus" class="font-semibold text-slate-800"></span>?
+                    </p>
+                    <p class="mt-1 text-xs text-slate-400">Data produk yang sudah dihapus tidak bisa dikembalikan.</p>
+                </div>
+            </div>
+
+            <form id="form-hapus-produk" method="POST" class="mt-6 flex justify-end space-x-3">
+                @csrf
+                @method('DELETE')
+                <button type="button" id="btn-batal-hapus"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -233,10 +185,13 @@
 
             const modal = document.getElementById('modal-produk');
             const formProduk = document.getElementById('form-produk');
-            const btnTambah = document.getElementById('btn-tambah-produk');
             const btnTutupModal = document.getElementById('btn-tutup-modal');
             const btnBatal = document.getElementById('btn-batal');
             const modalTitle = document.getElementById('modal-title');
+            const modalHapus = document.getElementById('modal-hapus-produk');
+            const formHapusProduk = document.getElementById('form-hapus-produk');
+            const btnBatalHapus = document.getElementById('btn-batal-hapus');
+            const namaProdukHapus = document.getElementById('nama-produk-hapus');
 
 
             // Fungsi untuk menampilkan modal
@@ -297,11 +252,27 @@
                 modal.classList.add('hidden');
             };
 
-            // Event listener untuk tombol Tambah
-            if (btnTambah) btnTambah.addEventListener('click', () => bukaModal('tambah'));
+            const bukaModalHapus = (data) => {
+                formHapusProduk.action = data.action;
+                namaProdukHapus.textContent = `"${data.nama}"`;
+                modalHapus.classList.remove('hidden');
+            };
 
-            // Event listener untuk tombol Edit (perlu delegasi event)
+            const tutupModalHapus = () => {
+                modalHapus.classList.add('hidden');
+                formHapusProduk.action = '';
+                namaProdukHapus.textContent = '';
+            };
+
+            // Event listener tombol di dalam komponen Livewire memakai delegasi
+            // agar tetap aktif setelah Livewire me-render ulang DOM.
             document.addEventListener('click', function(e) {
+                const btnTambah = e.target.closest('#btn-tambah-produk');
+                if (btnTambah) {
+                    bukaModal('tambah');
+                    return;
+                }
+
                 // Cari apakah yang diklik adalah tombol edit atau icon di dalam tombol edit
                 const btnEdit = e.target.closest('.btn-edit');
                 if (btnEdit) {
@@ -314,28 +285,33 @@
                         foto: btnEdit.getAttribute('data-foto')
                     };
                     bukaModal('edit', data);
+                    return;
                 }
-            });
 
-            // Event listener untuk tombol Hapus (Sesuai wireframe [cite: 91])
-            document.querySelectorAll('.btn-hapus').forEach(button => {
-                button.addEventListener('click', () => {
-                    // Konfirmasi JS sebelum hapus
-                    if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
-                        // TODO: Logika hapus (submit form hapus, dll)
-                        console.log('Hapus produk');
-                    }
-                });
+                const btnHapus = e.target.closest('.btn-hapus');
+                if (btnHapus) {
+                    bukaModalHapus({
+                        nama: btnHapus.getAttribute('data-nama'),
+                        action: btnHapus.getAttribute('data-action')
+                    });
+                }
             });
 
             // Event listener untuk tombol tutup dan batal
             btnTutupModal.addEventListener('click', tutupModal);
             btnBatal.addEventListener('click', tutupModal);
+            btnBatalHapus.addEventListener('click', tutupModalHapus);
 
             // Tutup modal jika klik di luar area modal
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     tutupModal();
+                }
+            });
+
+            modalHapus.addEventListener('click', (e) => {
+                if (e.target === modalHapus) {
+                    tutupModalHapus();
                 }
             });
 

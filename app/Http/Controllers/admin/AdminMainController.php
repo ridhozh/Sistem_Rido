@@ -48,12 +48,12 @@ class AdminMainController extends Controller
 
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
-            
+
             $revenue = Transaksi::whereDate('transaction_date', $date)->sum('total_amount') ?? 0;
 
             $salesData[] = [
                 'label' => $date->isoFormat('ddd'),
-                'revenue' => (float) $revenue, 
+                'revenue' => (float) $revenue,
                 'formatted' => 'Rp ' . number_format($revenue, 0, ',', '.')
             ];
 
@@ -88,10 +88,7 @@ class AdminMainController extends Controller
     public function manageProducts()
     {
         $categories = Kategori::all();
-
-        $products = Produk::with('kategori')->get();
-
-        return view('admin.manage_produk', compact('categories', 'products'));
+        return view('admin.manage_produk', compact('categories'));
     }
 
     // manage laporan
@@ -109,9 +106,11 @@ class AdminMainController extends Controller
             ]);
         }
 
-        $transaksis = $query->latest()->get();
+        $transaksis = $query->latest()->paginate(10);
 
-        return view('admin.laporan', compact('transaksis', 'start_date', 'end_date'));
+        $totalPendapatan = $query->sum('total_amount');
+
+        return view('admin.laporan', compact('transaksis', 'start_date', 'end_date', 'totalPendapatan'));
     }
 
     // manage pengguna

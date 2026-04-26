@@ -30,7 +30,7 @@ class KasirMainController extends Controller
 
     public function transaksi()
     {
-        $categories = Kategori::with('produks')->get();
+        $categories = Kategori::with('produks');
         return view('kasir.transaksi', compact('categories'));
     }
 
@@ -38,8 +38,7 @@ class KasirMainController extends Controller
     {
         $categories = Kategori::all();
 
-        $products = Produk::with('kategori')->get();
-        return view('kasir.stok_barang', compact('categories', 'products'));
+        return view('kasir.stok_barang', compact('categories'));
     }
 
     public function checkout(Request $request)
