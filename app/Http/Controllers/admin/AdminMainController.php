@@ -284,4 +284,26 @@ class AdminMainController extends Controller
 
         return round($diff, 1);
     }
+
+    public function downloadTemplateProduk()
+    {
+        return Excel::download(new \App\Exports\ProdukTemplateExport, 'Template_Produk.xlsx');
+    }
+
+    public function importProduk(Request $request)
+    {
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx'
+        ], [
+            'file_excel.required' => 'File Excel wajib diunggah',
+            'file_excel.mimes' => 'Format file harus berupa .xlsx'
+        ]);
+
+        try {
+            Excel::import(new \App\Imports\ProdukImport, $request->file('file_excel'));
+            return redirect()->back()->with('success', 'Produk berhasil diimport!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['Terjadi kesalahan saat import: ' . $e->getMessage()]);
+        }
+    }
 }

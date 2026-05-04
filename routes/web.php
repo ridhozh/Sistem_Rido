@@ -21,6 +21,8 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
             Route::post('/produk/store', 'storeProduk')->name('admin.produk.store');
             Route::put('/produk/{id}', 'updateProduk')->name('admin.produk.update');
             Route::delete('/produk/{id}', 'destroyProduk')->name('admin.produk.destroy');
+            Route::get('/produk/download_template', 'downloadTemplateProduk')->name('admin.produk.download_template');
+            Route::post('/produk/import', 'importProduk')->name('admin.produk.import');
             Route::get('/laporan', 'manageLaporan')->name('admin.laporan');
 
             // Export routes

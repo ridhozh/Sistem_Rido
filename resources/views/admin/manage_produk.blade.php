@@ -176,6 +176,40 @@
         </div>
     </div>
 
+    <!-- Modal Import Produk -->
+    <div id="modal-import-produk" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
+
+            <!-- Header Modal -->
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-slate-800">Import Produk dari Excel</h3>
+                <button id="btn-tutup-modal-import" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+
+            <form action="{{ route('admin.produk.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label for="file_excel" class="block text-sm font-medium text-slate-700">File Excel (.xlsx)</label>
+                        <input type="file" id="file_excel" name="file_excel" accept=".xlsx" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
+                        <p class="text-xs text-gray-500 mt-2">Pastikan format file sesuai dengan template. Gambar harus berada persis di dalam cell kolom "Foto Produk".</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" id="btn-batal-import"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                        Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -192,6 +226,10 @@
             const formHapusProduk = document.getElementById('form-hapus-produk');
             const btnBatalHapus = document.getElementById('btn-batal-hapus');
             const namaProdukHapus = document.getElementById('nama-produk-hapus');
+
+            const modalImport = document.getElementById('modal-import-produk');
+            const btnTutupModalImport = document.getElementById('btn-tutup-modal-import');
+            const btnBatalImport = document.getElementById('btn-batal-import');
 
 
             // Fungsi untuk menampilkan modal
@@ -273,6 +311,12 @@
                     return;
                 }
 
+                const btnImport = e.target.closest('#btn-import-produk');
+                if (btnImport) {
+                    modalImport.classList.remove('hidden');
+                    return;
+                }
+
                 // Cari apakah yang diklik adalah tombol edit atau icon di dalam tombol edit
                 const btnEdit = e.target.closest('.btn-edit');
                 if (btnEdit) {
@@ -302,6 +346,9 @@
             btnBatal.addEventListener('click', tutupModal);
             btnBatalHapus.addEventListener('click', tutupModalHapus);
 
+            btnTutupModalImport.addEventListener('click', () => modalImport.classList.add('hidden'));
+            btnBatalImport.addEventListener('click', () => modalImport.classList.add('hidden'));
+
             // Tutup modal jika klik di luar area modal
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
@@ -312,6 +359,12 @@
             modalHapus.addEventListener('click', (e) => {
                 if (e.target === modalHapus) {
                     tutupModalHapus();
+                }
+            });
+
+            modalImport.addEventListener('click', (e) => {
+                if (e.target === modalImport) {
+                    modalImport.classList.add('hidden');
                 }
             });
 
