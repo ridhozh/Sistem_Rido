@@ -1,4 +1,8 @@
 import './bootstrap';
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+Alpine.start();
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -11,9 +15,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarTexts = document.querySelectorAll('.sidebar-text');
 
     // Cek elemen penting
-    if (!sidebar || !mainContent || !hamburgerBtn || !backdrop || !desktopMinimizeBtn) {
-        console.warn("Sidebar JS: Elemen penting tidak ditemukan. Pastikan semua ID ada di HTML.");
-        return;
+    if (sidebar && mainContent && hamburgerBtn && backdrop && desktopMinimizeBtn) {
+
+        const toggleMobileSidebar = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        };
+
+        hamburgerBtn.addEventListener('click', toggleMobileSidebar);
+        backdrop.addEventListener('click', toggleMobileSidebar);
+
+        desktopMinimizeBtn.addEventListener('click', () => {
+            // ... your existing minimize logic ...
+            if (sidebar.classList.contains('w-64')) {
+                sidebar.classList.replace('w-64', 'w-20');
+                mainContent.classList.replace('lg:ml-64', 'lg:ml-20');
+            } else {
+                sidebar.classList.replace('w-20', 'w-64');
+                mainContent.classList.replace('lg:ml-20', 'lg:ml-64');
+            }
+        });
+
+        console.log("Sidebar JS: Loaded successfully.");
+    } else {
+        console.warn("Sidebar JS: One or more IDs are missing from the HTML.");
     }
 
     const minimizeIcon = desktopMinimizeBtn.querySelector('svg');
@@ -46,11 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContent.classList.add('lg:ml-20'); // <-- Ini yang butuh "umpan" JIT
 
             // Sembunyikan teks
-            if(logoText) logoText.classList.add('hidden');
+            if (logoText) logoText.classList.add('hidden');
             sidebarTexts.forEach(text => text.classList.add('hidden'));
 
             // Ganti ikon ke "expand"
-            if(minimizeIcon) minimizeIcon.innerHTML = iconExpand;
+            if (minimizeIcon) minimizeIcon.innerHTML = iconExpand;
 
         } else {
             // --- Menjadi Penuh (w-64) ---
@@ -62,11 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContent.classList.remove('lg:ml-20');
 
             // Tampilkan teks
-            if(logoText) logoText.classList.remove('hidden');
+            if (logoText) logoText.classList.remove('hidden');
             sidebarTexts.forEach(text => text.classList.remove('hidden'));
 
             // Ganti ikon ke "minimize"
-            if(minimizeIcon) minimizeIcon.innerHTML = iconMinimize;
+            if (minimizeIcon) minimizeIcon.innerHTML = iconMinimize;
         }
     });
 

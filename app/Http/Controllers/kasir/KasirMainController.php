@@ -24,8 +24,30 @@ class KasirMainController extends Controller
 
         $totalItemsSold = DetailTransaksi::whereDate('created_at', Carbon::today())
             ->sum('qty');
-            
-        return view('kasir.dashboard', compact('todayRevenue', 'totalItemsSold'));
+
+        $latestTransactions = Transaksi::latest()
+            ->take(3)
+            ->get();
+
+        $salesData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+
+            $revenue = Transaksi::whereDate('created_at', $date)
+                ->sum('total_amount');
+
+            $salesData[] = [
+                'label'     => $date->isoFormat('ddd'), // Format: Sen, Sel, Rab...
+                'revenue'   => $revenue,
+                'formatted' => 'Rp ' . number_format($revenue, 0, ',', '.')
+            ];
+        }
+
+        // 4. Skala Grafik (Y-Axis)
+        $maxRevenue = collect($salesData)->max('revenue');
+        $yAxisMax = $maxRevenue > 0 ? $maxRevenue : 1000000; // Default 1jt jika kosong
+
+        return view('kasir.dashboard', compact('todayRevenue', 'totalItemsSold', 'latestTransactions','salesData','yAxisMax'));
     }
 
     public function transaksi()
