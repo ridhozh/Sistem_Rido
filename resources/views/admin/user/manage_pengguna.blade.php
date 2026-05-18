@@ -8,6 +8,70 @@
     <!-- Kontainer Utama -->
     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
 
+        <!-- Toast Container -->
+        <div class="fixed top-5 right-5 z-[60] flex flex-col gap-4">
+            @if ($errors->any())
+                <div id="toast-error"
+                    class="pointer-events-auto w-full max-w-sm bg-white/80 backdrop-blur-lg border border-red-200 shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-500">
+                    <div class="p-4 flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-red-100 p-2 rounded-lg">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-gray-900 font-bold text-sm">Terjadi Kesalahan</h3>
+                            <ul class="text-xs text-gray-600 mt-1 list-disc list-inside">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <button onclick="closeToast('toast-error')"
+                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="h-1 bg-red-100 w-full">
+                        <div id="error-progress" class="h-1 bg-red-500 transition-all linear duration-[5000ms] w-full">
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div id="toast-success"
+                    class="pointer-events-auto w-full max-w-sm bg-white/80 backdrop-blur-lg border border-emerald-200 shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-500">
+                    <div class="p-4 flex items-center space-x-4">
+                        <div class="flex-shrink-0 bg-emerald-100 p-2 rounded-lg">
+                            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-gray-900 font-bold text-sm">Berhasil!</h3>
+                            <p class="text-xs text-gray-600">{{ session('success') }}</p>
+                        </div>
+                        <button onclick="closeToast('toast-success')" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="h-1 bg-emerald-100 w-full">
+                        <div id="success-progress"
+                            class="h-1 bg-emerald-500 transition-all linear duration-[5000ms] w-full">
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+
         <!-- Header Card dan Tombol Tambah -->
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-semibold text-slate-700">Daftar Pengguna</h2>
@@ -286,6 +350,43 @@
                 if (e.target === modalHapus) tutupModalHapus();
             });
 
+            const errorToast = document.getElementById('toast-error');
+            if (errorToast) {
+                const progress = document.getElementById('error-progress');
+                if (progress) {
+                    setTimeout(() => { progress.style.width = '0%'; }, 50);
+                }
+                setTimeout(() => {
+                    errorToast.style.opacity = '0';
+                    errorToast.style.transform = 'translateX(20px)';
+                    setTimeout(() => errorToast.remove(), 500);
+                }, 5000);
+            }
+
+            // Auto hide success toast
+            const successToast = document.getElementById('toast-success');
+            if (successToast) {
+                const progress = document.getElementById('success-progress');
+                if (progress) {
+                    setTimeout(() => { progress.style.width = '0%'; }, 50);
+                }
+                setTimeout(() => {
+                    successToast.style.opacity = '0';
+                    successToast.style.transform = 'translateX(20px)';
+                    setTimeout(() => successToast.remove(), 500);
+                }, 5000);
+            }
+
         });
+
+        // Fungsi untuk menutup toast secara manual
+        window.closeToast = function(id) {
+            const toast = document.getElementById(id);
+            if (toast) {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 500);
+            }
+        };
     </script>
 @endpush
