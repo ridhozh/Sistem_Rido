@@ -34,6 +34,10 @@ Route::middleware(['auth', 'verified', 'rolemanager:admin'])->group(function () 
             Route::post('/users', 'store')->name('users.store');
             Route::put('/users/{id}', 'update')->name('users.update');
             Route::delete('/users/{id}', 'destroy')->name('users.destroy');
+
+            // modal kasir
+            Route::get('/modal-kasir', 'manageModalKasir')->name('admin.modal_kasir');
+            Route::post('/modal-kasir', 'storeModalKasir')->name('admin.modal_kasir.store');
         });
     });
 });

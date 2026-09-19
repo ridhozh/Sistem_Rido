@@ -5,8 +5,8 @@
 
 @section('content')
 
-<!-- Grid untuk Statistik Card (Revisi Desain) -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Grid Finansial & Kas Hari Ini -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
 
     <!-- Card 1: Total Penjualan Hari Ini -->
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow duration-300">
@@ -21,13 +21,77 @@
             </span>
         </div>
         <div>
-            <!-- Font lebih kecil dan seimbang -->
             <p class="text-2xl font-bold text-slate-800">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</p>
             <p class="text-xs {{ $revenueChange > 0 ? 'text-green-500' : 'text-red-500' }} mt-1">{{ $revenueChange >= 0 ? '↑' : '↓' }} {{ abs(round($revenueChange, 1)) }}% dari kemarin</p>
         </div>
     </div>
 
-    <!-- Card 2: Total Barang Terjual -->
+    <!-- Card 2: Penjualan Tunai -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow duration-300">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-slate-600">Penjualan Tunai</h3>
+            <span class="p-2 bg-emerald-100 rounded-lg">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+            </span>
+        </div>
+        <div>
+            <p class="text-2xl font-bold text-emerald-600">Rp {{ number_format($todayCash, 0, ',', '.') }}</p>
+            <p class="text-xs text-slate-500 mt-1">Uang tunai masuk hari ini</p>
+        </div>
+    </div>
+
+    <!-- Card 3: Penjualan Non-Tunai -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow duration-300">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-slate-600">Penjualan Non-Tunai</h3>
+            <span class="p-2 bg-violet-100 rounded-lg">
+                <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                </svg>
+            </span>
+        </div>
+        <div>
+            <p class="text-2xl font-bold text-violet-600">Rp {{ number_format($todayNonCash, 0, ',', '.') }}</p>
+            <p class="text-xs text-slate-500 mt-1">QRIS / Transfer / Midtrans</p>
+        </div>
+    </div>
+
+    <!-- Card 4: Uang Fisik Kasir (Kas Saat Ini) -->
+    <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-5 rounded-xl text-white shadow-md transition-shadow duration-300">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-blue-100">Kas Fisik Kasir (Saat Ini)</h3>
+            <span class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+            </span>
+        </div>
+        <div>
+            <p class="text-2xl font-bold">Rp {{ number_format($todayKasKasir, 0, ',', '.') }}</p>
+            <p class="text-xs text-blue-200 mt-1">Modal Awal (Rp {{ number_format($todayModalKasir, 0, ',', '.') }}) + Tunai</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Grid Operasional & Stok -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+    <!-- Card: Modal Awal Kasir Hari Ini -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow duration-300">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-slate-600">Modal Awal Kasir</h3>
+            <a href="{{ route('admin.modal_kasir') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800 underline">Atur Modal →</a>
+        </div>
+        <div>
+            <p class="text-2xl font-bold text-amber-600">Rp {{ number_format($todayModalKasir, 0, ',', '.') }}</p>
+            <p class="text-xs text-slate-500 mt-1">Modal kembalian kasir hari ini</p>
+        </div>
+    </div>
+
+    <!-- Card: Total Barang Terjual -->
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow duration-300">
         <div class="flex justify-between items-start mb-2">
             <h3 class="text-sm font-semibold text-slate-600">Total Barang Terjual</h3>
@@ -41,7 +105,7 @@
         </div>
         <div>
             <p class="text-2xl font-bold text-slate-800">{{ $todayQty ?? 0 }} Pcs</p>
-            <p class="text-xs  {{ $todayQty > 0 ? 'text-slate-500' : 'text-red-500' }} mt-1">
+            <p class="text-xs {{ $todayQty > 0 ? 'text-slate-500' : 'text-red-500' }} mt-1">
                 @if(($todayQty ?? 0) > 0)
                 Total hari ini
                 @else
@@ -51,7 +115,7 @@
         </div>
     </div>
 
-    <!-- Card 3: Barang Terlaris -->
+    <!-- Card: Barang Terlaris -->
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow duration-300">
         <div class="flex justify-between items-start mb-2">
             <h3 class="text-sm font-semibold text-slate-600">Barang Terlaris</h3>
@@ -65,7 +129,7 @@
         </div>
         <div>
             @if($mostSoldProduct && $mostSoldProduct->produk)
-            <p class="text-2xl font-bold text-slate-800">{{ $mostSoldProduct->produk->nama_produk }}</p>
+            <p class="text-2xl font-bold text-slate-800 truncate" title="{{ $mostSoldProduct->produk->nama_produk }}">{{ $mostSoldProduct->produk->nama_produk }}</p>
             <p class="text-xs text-slate-500 mt-1">{{ $mostSoldProduct->total_qty }} Pcs terjual</p>
             @else
             <p class="text-2xl font-bold text-slate-800">-</p>
@@ -74,7 +138,7 @@
         </div>
     </div>
 
-    <!-- Card 4: Stok Hampir Habis -->
+    <!-- Card: Stok Hampir Habis -->
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow duration-300">
         <div class="flex justify-between items-start mb-2">
             <h3 class="text-sm font-semibold text-slate-600">Stok Hampir Habis</h3>
@@ -86,21 +150,20 @@
                 </svg>
             </span>
             @else
-            <span class="p-2 bg-emerald-100 rounded-lg">
-                <svg class="w-5 h-5 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <span class="p-2 bg-green-100 rounded-lg">
+                <svg class="w-5 h-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
             </span>
             @endif
         </div>
-
         <div>
-            <p class="text-2xl font-bold text-slate-800">{{ $lowStockProducts ?? 0}} Produk</p>
-
             @if($lowStockProducts > 0)
-            <p class="text-xs text-red-500 mt-1 font-medium italic">Segera restock!</p>
+            <p class="text-2xl font-bold text-red-600">{{ $lowStockProducts }} Produk</p>
+            <p class="text-xs text-red-500 mt-1 font-medium italic">Perlu restock segera</p>
             @else
-            <p class="text-xs text-emerald-600 mt-1 font-medium italic">Semua stok aman.</p>
+            <p class="text-2xl font-bold text-slate-800">Aman</p>
+            <p class="text-xs text-green-500 mt-1">Semua stok di atas 10 pcs</p>
             @endif
         </div>
     </div>

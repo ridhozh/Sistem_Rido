@@ -31,4 +31,20 @@ class Transaksi extends Model
     protected $casts = [
         'transaction_date' => 'datetime',
     ];
+
+    public function getTotalModalAttribute()
+    {
+        return $this->details->sum(function ($detail) {
+            $modal = ($detail->harga_modal > 0)
+                ? $detail->harga_modal
+                : ($detail->produk->harga_modal ?? 0);
+
+            return $modal * $detail->qty;
+        });
+    }
+
+    public function getLabaKotorAttribute()
+    {
+        return $this->total_amount - $this->total_modal;
+    }
 }

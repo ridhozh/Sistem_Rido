@@ -22,25 +22,27 @@ class TransactionsExport implements FromQuery, WithHeadings, WithMapping, Should
     public function query()
     {
         // Use eager loading for relationships to avoid 'null' data issues
-        $query = Transaksi::query();
+        $query = Transaksi::with(['details.produk']);
 
         if ($this->start && $this->end) {
-            $query->whereBetween('created_at', [
+            $query->whereBetween('transaction_date', [
                 Carbon::parse($this->start)->startOfDay(),
                 Carbon::parse($this->end)->endOfDay()
             ]);
         }
 
-        return $query->latest();
+        return $query->latest('transaction_date');
     }
 
     public function headings(): array
     {
         return [
             'ID Transaksi',
-            'Nama Pelanggan',
-            'Total Belanja',
+            'Kasir / Pelanggan',
             'Metode Pembayaran',
+            'Total Belanja (Omzet)',
+            'Total Modal (HPP)',
+            'Laba Kotor',
             'Waktu Transaksi'
         ];
     }
@@ -49,10 +51,12 @@ class TransactionsExport implements FromQuery, WithHeadings, WithMapping, Should
     {
         return [
             $transaksi->transaction_id,
-            $transaksi->cashier_name ?? 'Guest',
+            $transaksi->cashier_name ?? 'Kasir',
+            $transaksi->payment_method ?? 'Tunai',
             'Rp ' . number_format($transaksi->total_amount ?? 0, 0, ',', '.'),
-            $transaksi->payment_method ?? 'Cash',
-            $transaksi->transaction_date->format('d/m/Y H:i'),
+            'Rp ' . number_format($transaksi->total_modal ?? 0, 0, ',', '.'),
+            'Rp ' . number_format($transaksi->laba_kotor ?? 0, 0, ',', '.'),
+            $transaksi->transaction_date ? $transaksi->transaction_date->format('d/m/Y H:i') : '-',
         ];
     }
 }

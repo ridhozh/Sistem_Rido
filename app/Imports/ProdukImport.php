@@ -30,7 +30,8 @@ class ProdukImport implements ToCollection, WithHeadingRow, WithEvents
 
             $namaProduk = $row['nama_produk'];
             $namaKategori = $row['nama_kategori'];
-            $harga = $row['harga'] ?? 0;
+            $hargaModal = $row['harga_modal'] ?? 0;
+            $harga = $row['harga_jual'] ?? $row['harga'] ?? 0;
             $stokAwal = $row['stok_awal'] ?? 0;
 
             // Cari kategori berdasarkan nama
@@ -54,6 +55,7 @@ class ProdukImport implements ToCollection, WithHeadingRow, WithEvents
                 // Update
                 $updateData = [
                     'kategori_id' => $kategori->id,
+                    'harga_modal' => $hargaModal,
                     'harga' => $harga,
                     'stok_awal' => $stokAwal,
                 ];
@@ -72,6 +74,7 @@ class ProdukImport implements ToCollection, WithHeadingRow, WithEvents
                 Produk::create([
                     'nama_produk' => $namaProduk,
                     'kategori_id' => $kategori->id,
+                    'harga_modal' => $hargaModal,
                     'harga' => $harga,
                     'stok_awal' => $stokAwal,
                     'foto_produk' => $fotoPath,

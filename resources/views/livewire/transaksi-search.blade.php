@@ -33,7 +33,7 @@
 
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                             @foreach ($category->produks as $item)
-                                <div
+                                <div wire:key="product-card-{{ $item->id }}"
                                     class="group bg-white border border-slate-100 rounded-[2rem] p-3 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300">
 
                                     <div

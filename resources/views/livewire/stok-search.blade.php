@@ -39,7 +39,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($products as $produk)
-                    <tr>
+                    <tr wire:key="stok-{{ $produk->id }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $produk->nama_produk }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $produk->kategori->nama_kategori ?? 'Tanpa Kategori' }}</td>

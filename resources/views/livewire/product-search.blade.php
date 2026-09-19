@@ -61,7 +61,10 @@
                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori
                      </th>
                      <th scope="col"
-                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga
+                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Modal
+                     </th>
+                     <th scope="col"
+                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Jual
                      </th>
                      <th scope="col"
                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok
@@ -73,17 +76,21 @@
              </thead>
              <tbody class="bg-white divide-y divide-gray-200">
                  @forelse($products as $product)
-                     <tr>
+                     <tr wire:key="product-{{ $product->id }}">
                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $product->nama_produk }}</td>
                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                              {{ $product->kategori->nama_kategori ?? 'Tanpa Kategori' }}</td>
-                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp
+                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">Rp
+                             {{ number_format($product->harga_modal ?? 0, 0, ',', '.') }}</td>
+                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">Rp
                              {{ number_format($product->harga, 0, ',', '.') }}</td>
                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->stok_awal }}</td>
                          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                              <button class="btn-edit text-indigo-600 hover:text-indigo-900"
                                  data-id="{{ $product->id }}" data-nama="{{ $product->nama_produk }}"
-                                 data-kategori="{{ $product->kategori_id }}" data-harga="{{ $product->harga }}"
+                                 data-kategori="{{ $product->kategori_id }}"
+                                 data-harga-modal="{{ $product->harga_modal ?? 0 }}"
+                                 data-harga="{{ $product->harga }}"
                                  data-stok="{{ $product->stok_awal }}" data-foto="{{ $product->foto_produk }}">
                                  Edit
                              </button>
@@ -96,7 +103,7 @@
                      </tr>
                  @empty
                      <tr>
-                         <td colspan="5" class="px-6 py-12 text-center bg-gray-50">
+                         <td colspan="6" class="px-6 py-12 text-center bg-gray-50">
                              <div class="flex flex-col items-center justify-center">
                                  <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor"
                                      viewBox="0 0 24 24">

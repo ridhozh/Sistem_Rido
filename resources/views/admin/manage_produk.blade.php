@@ -115,9 +115,14 @@
                         </select>
                     </div>
                     <div>
-                        <label for="harga" class="block text-sm font-medium text-slate-700">Harga</label>
+                        <label for="harga_modal" class="block text-sm font-medium text-slate-700">Harga Modal (Harga Beli/Dasar)</label>
+                        <input type="number" id="harga_modal" name="harga_modal"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required min="0">
+                    </div>
+                    <div>
+                        <label for="harga" class="block text-sm font-medium text-slate-700">Harga Jual</label>
                         <input type="number" id="harga" name="harga"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required min="0">
                     </div>
                     <div>
                         <label for="stok_awal" class="block text-sm font-medium text-slate-700">Stok Awal</label>
@@ -255,6 +260,8 @@
                         data.nama;
                     if (document.getElementById('kategori')) document.getElementById('kategori').value = data
                         .kategori_id;
+                    if (document.getElementById('harga_modal')) document.getElementById('harga_modal').value = data
+                        .harga_modal ?? 0;
                     if (document.getElementById('harga')) document.getElementById('harga').value = data.harga;
                     if (document.getElementById('stok_awal')) document.getElementById('stok_awal').value = data
                         .stok;
@@ -324,6 +331,7 @@
                         id: btnEdit.getAttribute('data-id'),
                         nama: btnEdit.getAttribute('data-nama'),
                         kategori_id: btnEdit.getAttribute('data-kategori'),
+                        harga_modal: btnEdit.getAttribute('data-harga-modal') || 0,
                         harga: btnEdit.getAttribute('data-harga'),
                         stok: btnEdit.getAttribute('data-stok'),
                         foto: btnEdit.getAttribute('data-foto')

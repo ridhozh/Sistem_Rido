@@ -7,6 +7,7 @@ use App\Models\DetailTransaksi;
 use App\Models\Kategori;
 use App\Models\Produk;
 use App\Models\Transaksi;
+use App\Models\ModalKasir;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,10 +20,23 @@ class KasirMainController extends Controller
     //
     public function index()
     {
-        $todayRevenue = DetailTransaksi::whereDate('created_at', Carbon::today())
+        $today = Carbon::today();
+
+        $todayRevenue = DetailTransaksi::whereDate('created_at', $today)
             ->sum('subtotal');
 
-        $totalItemsSold = DetailTransaksi::whereDate('created_at', Carbon::today())
+        $todayCash = Transaksi::whereDate('transaction_date', $today)
+            ->whereRaw('LOWER(payment_method) = ?', ['tunai'])
+            ->sum('total_amount');
+
+        $todayNonCash = Transaksi::whereDate('transaction_date', $today)
+            ->whereRaw('LOWER(payment_method) != ?', ['tunai'])
+            ->sum('total_amount');
+
+        $todayModalKasir = (float) (ModalKasir::whereDate('tanggal', $today)->value('modal_awal') ?? 0);
+        $todayKasKasir = $todayModalKasir + $todayCash;
+
+        $totalItemsSold = DetailTransaksi::whereDate('created_at', $today)
             ->sum('qty');
 
         $latestTransactions = Transaksi::latest()
@@ -47,7 +61,17 @@ class KasirMainController extends Controller
         $maxRevenue = collect($salesData)->max('revenue');
         $yAxisMax = $maxRevenue > 0 ? $maxRevenue : 1000000; // Default 1jt jika kosong
 
-        return view('kasir.dashboard', compact('todayRevenue', 'totalItemsSold', 'latestTransactions','salesData','yAxisMax'));
+        return view('kasir.dashboard', compact(
+            'todayRevenue',
+            'todayCash',
+            'todayNonCash',
+            'todayModalKasir',
+            'todayKasKasir',
+            'totalItemsSold',
+            'latestTransactions',
+            'salesData',
+            'yAxisMax'
+        ));
     }
 
     public function transaksi()
@@ -276,6 +300,7 @@ class KasirMainController extends Controller
                     'produk_id' => $produk->id,
                     'qty' => $item['qty'],
                     'harga' => $produk->harga,
+                    'harga_modal' => $produk->harga_modal ?? 0,
                     'subtotal' => $subtotal,
                 ]);
 

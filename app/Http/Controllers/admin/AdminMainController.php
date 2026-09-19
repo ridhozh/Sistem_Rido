@@ -9,6 +9,7 @@ use App\Models\Kategori;
 use App\Models\Produk;
 use App\Models\Transaksi;
 use App\Models\User;
+use App\Models\ModalKasir;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -27,6 +28,17 @@ class AdminMainController extends Controller
 
         $todayRevenue = DetailTransaksi::whereDate('created_at', $today)->sum('subtotal');
         $todayQty = DetailTransaksi::whereDate('created_at', $today)->sum('qty');
+
+        $todayCash = Transaksi::whereDate('transaction_date', $today)
+            ->whereRaw('LOWER(payment_method) = ?', ['tunai'])
+            ->sum('total_amount');
+
+        $todayNonCash = Transaksi::whereDate('transaction_date', $today)
+            ->whereRaw('LOWER(payment_method) != ?', ['tunai'])
+            ->sum('total_amount');
+
+        $todayModalKasir = (float) (ModalKasir::whereDate('tanggal', $today)->value('modal_awal') ?? 0);
+        $todayKasKasir = $todayModalKasir + $todayCash;
 
         $yesterdayRevenue = DetailTransaksi::whereDate('created_at', $yesterday)->sum('subtotal');
         $yesterdayQty = DetailTransaksi::whereDate('created_at', $yesterday)->sum('qty');
@@ -75,6 +87,10 @@ class AdminMainController extends Controller
         return view('admin.dashboard', compact(
             'lowStockProducts',
             'todayRevenue',
+            'todayCash',
+            'todayNonCash',
+            'todayModalKasir',
+            'todayKasKasir',
             'revenueChange',
             'todayQty',
             'qtyChange',
@@ -97,20 +113,81 @@ class AdminMainController extends Controller
         $start_date = $request->input('tanggal_awal');
         $end_date = $request->input('tanggal_akhir');
 
-        $query = Transaksi::query();
+        $baseQuery = Transaksi::query();
 
         if ($start_date && $end_date) {
-            $query->whereBetween('created_at', [
+            $baseQuery->whereBetween('transaction_date', [
                 Carbon::parse($start_date)->startOfDay(),
                 Carbon::parse($end_date)->endOfDay()
             ]);
         }
 
-        $transaksis = $query->latest()->paginate(10);
+        // Summary metrics
+        $totalPendapatan = (clone $baseQuery)->sum('total_amount');
+        $totalTunai = (clone $baseQuery)->whereRaw('LOWER(payment_method) = ?', ['tunai'])->sum('total_amount');
+        $totalNonTunai = (clone $baseQuery)->whereRaw('LOWER(payment_method) != ?', ['tunai'])->sum('total_amount');
 
-        $totalPendapatan = $query->sum('total_amount');
+        // Total modal (HPP) & Laba Kotor dari semua data yang terfilter
+        $transaksiIds = (clone $baseQuery)->pluck('id');
+        $allDetails = DetailTransaksi::whereIn('transaksi_id', $transaksiIds)->with('produk')->get();
 
-        return view('admin.laporan', compact('transaksis', 'start_date', 'end_date', 'totalPendapatan'));
+        $totalModal = $allDetails->sum(function ($detail) {
+            $modal = ($detail->harga_modal > 0)
+                ? $detail->harga_modal
+                : ($detail->produk->harga_modal ?? 0);
+            return $modal * $detail->qty;
+        });
+
+        $totalLabaKotor = $totalPendapatan - $totalModal;
+        $marginLaba = $totalPendapatan > 0 ? round(($totalLabaKotor / $totalPendapatan) * 100, 1) : 0;
+
+        // Rekap Harian (Grouping per tanggal)
+        $allTransactionsForRekap = (clone $baseQuery)
+            ->with(['details.produk'])
+            ->orderByDesc('transaction_date')
+            ->get();
+
+        $rekapHarian = $allTransactionsForRekap->groupBy(function ($item) {
+            return Carbon::parse($item->transaction_date)->format('Y-m-d');
+        })->map(function ($dayTransactions, $date) {
+            $omzet = $dayTransactions->sum('total_amount');
+            $tunai = $dayTransactions->filter(fn($t) => strtolower($t->payment_method) === 'tunai')->sum('total_amount');
+            $nonTunai = $dayTransactions->filter(fn($t) => strtolower($t->payment_method) !== 'tunai')->sum('total_amount');
+
+            $modal = 0;
+            foreach ($dayTransactions as $trx) {
+                foreach ($trx->details as $d) {
+                    $modalUnit = ($d->harga_modal > 0) ? $d->harga_modal : ($d->produk->harga_modal ?? 0);
+                    $modal += ($modalUnit * $d->qty);
+                }
+            }
+
+            return (object) [
+                'tanggal' => Carbon::parse($date),
+                'jumlah_transaksi' => $dayTransactions->count(),
+                'total_omzet' => $omzet,
+                'total_tunai' => $tunai,
+                'total_non_tunai' => $nonTunai,
+                'total_modal' => $modal,
+                'laba_kotor' => $omzet - $modal,
+            ];
+        })->values();
+
+        // Paginasi detail transaksi
+        $transaksis = (clone $baseQuery)->with(['details.produk.kategori'])->latest('transaction_date')->paginate(10);
+
+        return view('admin.laporan', compact(
+            'transaksis',
+            'start_date',
+            'end_date',
+            'totalPendapatan',
+            'totalTunai',
+            'totalNonTunai',
+            'totalModal',
+            'totalLabaKotor',
+            'marginLaba',
+            'rekapHarian'
+        ));
     }
 
     // manage pengguna
@@ -186,6 +263,7 @@ class AdminMainController extends Controller
             'nama_produk' => 'required|string|max:255',
             'kategori_id' => 'required|string|max:255',
             'foto_produk' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'harga_modal' => 'required|numeric|min:0',
             'harga' => 'required|numeric|min:0',
             'stok_awal' => 'required|integer|min:0'
         ]);
@@ -210,6 +288,7 @@ class AdminMainController extends Controller
             'nama_produk' => 'required|string|max:255',
             'foto_produk' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'kategori_id' => 'required|exists:kategoris,id',
+            'harga_modal' => 'required|numeric|min:0',
             'harga'       => 'required|numeric|min:0',
             'stok_awal'   => 'required|integer|min:0'
         ]);
@@ -247,17 +326,21 @@ class AdminMainController extends Controller
         $start = $request->tanggal_awal;
         $end = $request->tanggal_akhir;
 
-        $query = Transaksi::query();
+        $query = Transaksi::with(['details.produk']);
         if ($start && $end) {
-            $query->whereBetween('created_at', [
+            $query->whereBetween('transaction_date', [
                 Carbon::parse($start)->startOfDay(),
                 Carbon::parse($end)->endOfDay()
             ]);
         }
 
-        $transaksis = $query->latest()->get();
+        $transaksis = $query->latest('transaction_date')->get();
 
-        $pdf = Pdf::loadView('admin.pdf_template', compact('transaksis', 'start', 'end'));
+        $totalPendapatan = $transaksis->sum('total_amount');
+        $totalModal = $transaksis->sum('total_modal');
+        $totalLabaKotor = $totalPendapatan - $totalModal;
+
+        $pdf = Pdf::loadView('admin.pdf_template', compact('transaksis', 'start', 'end', 'totalPendapatan', 'totalModal', 'totalLabaKotor'));
         return $pdf->download('Laporan_Transaksi_' . now()->format('Ymd') . '.pdf');
     }
 
@@ -305,5 +388,51 @@ class AdminMainController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['Terjadi kesalahan saat import: ' . $e->getMessage()]);
         }
+    }
+
+    public function manageModalKasir(Request $request)
+    {
+        $today = Carbon::today();
+        $todayModal = ModalKasir::whereDate('tanggal', $today)->first();
+
+        $historyModal = ModalKasir::with('user')
+            ->orderByDesc('tanggal')
+            ->paginate(15);
+
+        // Hitung transaksi tunai hari ini
+        $todayCashSales = Transaksi::whereDate('transaction_date', $today)
+            ->whereRaw('LOWER(payment_method) = ?', ['tunai'])
+            ->sum('total_amount');
+
+        $modalAwalHariIni = $todayModal->modal_awal ?? 0;
+        $totalKasFisikHariIni = $modalAwalHariIni + $todayCashSales;
+
+        return view('admin.modal_kasir', compact(
+            'todayModal',
+            'historyModal',
+            'todayCashSales',
+            'modalAwalHariIni',
+            'totalKasFisikHariIni'
+        ));
+    }
+
+    public function storeModalKasir(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date',
+            'modal_awal' => 'required|numeric|min:0',
+            'keterangan' => 'nullable|string|max:255',
+        ]);
+
+        ModalKasir::updateOrCreate(
+            ['tanggal' => Carbon::parse($request->tanggal)->toDateString()],
+            [
+                'user_id' => auth()->id(),
+                'modal_awal' => $request->modal_awal,
+                'keterangan' => $request->keterangan,
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Modal awal kasir berhasil disimpan!');
     }
 }

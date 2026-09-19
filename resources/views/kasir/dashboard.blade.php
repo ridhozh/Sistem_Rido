@@ -14,10 +14,11 @@
     </a>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Card 1: Total Transaksi Hari Ini -->
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
         <div class="flex justify-between items-start mb-2">
-            <h3 class="text-sm font-semibold text-slate-600">Total Transaksi Hari Ini</h3>
+            <h3 class="text-sm font-semibold text-slate-600">Total Penjualan Hari Ini</h3>
             <span class="p-2 bg-blue-100 rounded-lg">
                 <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -25,9 +26,66 @@
             </span>
         </div>
         <p class="text-2xl font-bold text-slate-800">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</p>
-        <p class="text-xs text-slate-500 mt-1">Total transaksi Anda</p>
+        <p class="text-xs text-slate-500 mt-1">Total seluruh omzet hari ini</p>
     </div>
 
+    <!-- Card 2: Penjualan Tunai -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-slate-600">Penjualan Tunai</h3>
+            <span class="p-2 bg-emerald-100 rounded-lg">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+            </span>
+        </div>
+        <p class="text-2xl font-bold text-emerald-600">Rp {{ number_format($todayCash, 0, ',', '.') }}</p>
+        <p class="text-xs text-slate-500 mt-1">Uang tunai masuk dari pelanggan</p>
+    </div>
+
+    <!-- Card 3: Penjualan Non-Tunai -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-slate-600">Penjualan Non-Tunai</h3>
+            <span class="p-2 bg-violet-100 rounded-lg">
+                <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                </svg>
+            </span>
+        </div>
+        <p class="text-2xl font-bold text-violet-600">Rp {{ number_format($todayNonCash, 0, ',', '.') }}</p>
+        <p class="text-xs text-slate-500 mt-1">QRIS / Transfer / Midtrans</p>
+    </div>
+
+    <!-- Card 4: Modal Awal Kasir -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-slate-600">Modal Awal Kasir</h3>
+            <span class="p-2 bg-amber-100 rounded-lg">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </span>
+        </div>
+        <p class="text-2xl font-bold text-amber-600">Rp {{ number_format($todayModalKasir, 0, ',', '.') }}</p>
+        <p class="text-xs text-slate-500 mt-1">Uang kembalian awal kasir</p>
+    </div>
+
+    <!-- Card 5: Uang Fisik Kasir (Kas Saat Ini) -->
+    <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-5 rounded-xl text-white shadow-md">
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-sm font-semibold text-blue-100">Uang Fisik Kasir (Saat Ini)</h3>
+            <span class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+            </span>
+        </div>
+        <p class="text-2xl font-bold">Rp {{ number_format($todayKasKasir, 0, ',', '.') }}</p>
+        <p class="text-xs text-blue-200 mt-1">Modal Awal + Transaksi Tunai (Fisik di laci)</p>
+    </div>
+
+    <!-- Card 6: Jumlah Barang Terjual -->
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
         <div class="flex justify-between items-start mb-2">
             <h3 class="text-sm font-semibold text-slate-600">Jumlah Barang Terjual</h3>
@@ -37,7 +95,7 @@
                 </svg>
             </span>
         </div>
-        <p class="text-2xl font-bold text-slate-800">{{ $totalItemsSold }}</p>
+        <p class="text-2xl font-bold text-slate-800">{{ $totalItemsSold }} Pcs</p>
         <p class="text-xs text-slate-500 mt-1">Barang yang Anda jual hari ini</p>
     </div>
 </div>

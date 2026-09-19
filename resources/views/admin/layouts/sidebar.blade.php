@@ -99,6 +99,24 @@
                         @endif
                     </a>
                 </li>
+
+                <li>
+                    <a href="{{ route('admin.modal_kasir') }}"
+                        class="group flex items-center px-4 py-3 rounded-xl transition-all duration-200 relative
+                        {{ request()->routeIs('admin.modal_kasir') 
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 
+                            : 'text-slate-600 hover:bg-white hover:shadow-md hover:text-blue-600' }}">
+
+                        <svg class="w-5 h-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0H3m-1.25 0H2.25m1.5 0h16.5m0 0h.75m-.75 0a.75.75 0 01.75.75v.75m0 0H21m0 0v11.25c0 .754-.726 1.294-1.453 1.096A60.108 60.108 0 0016.5 18.75m-13.5 0c1.03 0 2.052.052 3.064.155.727.074 1.436-.454 1.436-1.186V12.75A2.25 2.25 0 005.25 10.5h-1.5" />
+                        </svg>
+                        <span class="ml-3 font-semibold sidebar-text whitespace-nowrap">Modal Kasir</span>
+
+                        @if(request()->routeIs('admin.modal_kasir'))
+                            <div class="absolute right-2 w-1.5 h-1.5 bg-white rounded-full sidebar-text"></div>
+                        @endif
+                    </a>
+                </li>
             </ul>
         </nav>
 

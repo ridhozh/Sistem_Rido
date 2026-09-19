@@ -18,7 +18,8 @@ class ProdukTemplateExport implements WithHeadings, WithStyles, ShouldAutoSize, 
         return [
             'Nama Produk',
             'Nama Kategori',
-            'Harga',
+            'Harga Modal',
+            'Harga Jual',
             'Stok Awal',
             'Foto Produk (Gambar)'
         ];

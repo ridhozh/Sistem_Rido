@@ -14,6 +14,7 @@ class DetailTransaksi extends Model
         'produk_id',
         'qty',
         'harga',
+        'harga_modal',
         'subtotal',
     ];
     public function produk()
