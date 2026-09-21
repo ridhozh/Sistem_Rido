@@ -280,6 +280,7 @@ class KasirMainController extends Controller
             $transaksi = Transaksi::create([
                 'transaction_id' => $orderId,
                 'transaction_date' => now(),
+                'user_id' => Auth::id(),
                 'cashier_name' => Auth::user()->name ?? 'Kasir',
                 'total_amount' => 0,
                 'payment_method' => $paymentType,

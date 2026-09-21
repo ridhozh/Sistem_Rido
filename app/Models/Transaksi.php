@@ -16,6 +16,7 @@ class Transaksi extends Model
     protected $fillable = [
         'transaction_id',
         'transaction_date',
+        'user_id',
         'total_amount',
         'cashier_name',
         'payment_method',
